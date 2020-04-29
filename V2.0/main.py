@@ -127,17 +127,17 @@ class Main_Screen(FloatLayout):
 
 
         def band_relay(dummy, band):
-            GPIO.output(5,  0); GPIO.output(6,  0); GPIO.output(13, 0); GPIO.output(19, 0); GPIO.output(26, 0) # set all relays to off
+            GPIO.output(5,  1); GPIO.output(6,  1); GPIO.output(13, 1); GPIO.output(19, 1); GPIO.output(26, 1) # set all relays to off
             if band == 80:
-                GPIO.output(5,  1)
+                GPIO.output(5,  0)
             if band == 40:
-                GPIO.output(6,  1)                
+                GPIO.output(6,  0)                
             if band == 200:
-                GPIO.output(13, 1)                
+                GPIO.output(13, 0)                
             if band == 15:
-                GPIO.output(19, 1)
+                GPIO.output(19, 0)
             if band == 10:
-                GPIO.output(26, 1)
+                GPIO.output(26, 0)
 
 
 
