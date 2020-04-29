@@ -27,7 +27,13 @@ from kivy.lang import Builder
 from w1thermsensor import W1ThermSensor
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+GPIO.setup(17,GPIO.IN, pull_up_down=GPIO.PUD_UP) # input power alarm
+GPIO.setup(5,  GPIO.OUT) # 80 m relay
+GPIO.setup(6,  GPIO.OUT) # 40 m relay
+GPIO.setup(13, GPIO.OUT) # 20 m relay
+GPIO.setup(19, GPIO.OUT) # 15 m relay
+GPIO.setup(26, GPIO.OUT) # 10 m relay
 
 def dallas(dummy,temp_1,speed):
     sensor = W1ThermSensor()
@@ -46,7 +52,7 @@ def dallas(dummy,temp_1,speed):
         if 50 >= temp_1.value > 45:  speed.value = 80
         if 55 >= temp_1.value > 50:  speed.value = 90
         if 60 >= temp_1.value > 55:  speed.value = 100
-        fan.ChangeDutyCycle(100 - speed.value)
+        fan.ChangeDutyCycle(speed.value)
         
 def analog(dummy, fwd):
     adc = Adafruit_ADS1x15.ADS1115()
@@ -84,7 +90,7 @@ class Main_Screen(FloatLayout):
             if self.ref_proc > 50:
                 self.swr_led = 'img/red-led.png'
                 self.fault()
-                print "swr fault"
+                print self.ref_proc
             else:
                 self.swr_led = 'img/green-led.png'
 
@@ -92,7 +98,7 @@ class Main_Screen(FloatLayout):
             if (GPIO.input(17) == 0) :
                 self.swr_led = 'img/red-led.png'
                 self.fault()
-                print "swr fault"
+                print "pin 17 high"
             else:                
                 self.swr_led = 'img/green-led.png'
         def drain(self):
@@ -118,6 +124,23 @@ class Main_Screen(FloatLayout):
             os.system("shutdown now -h")
         def sys_reboot(arg):
             os.system("reboot")            
+
+
+        def band_relay(dummy, band):
+            GPIO.output(5,  0); GPIO.output(6,  0); GPIO.output(13, 0); GPIO.output(19, 0); GPIO.output(26, 0) # set all relays to off
+            if band == 80:
+                GPIO.output(5,  1)
+            if band == 40:
+                GPIO.output(6,  1)                
+            if band == 200:
+                GPIO.output(13, 1)                
+            if band == 15:
+                GPIO.output(19, 1)
+            if band == 10:
+                GPIO.output(26, 1)
+
+
+
 
         def update(self,*args):
             self.fwd_proc = (fwd.value*100)/3.3

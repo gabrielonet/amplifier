@@ -110,6 +110,7 @@
                             group: 'band'
                             background_normal:  "img/shape_off.png"
                             background_down: "img/shape_on.png"
+                            on_press: root.band_relay(80)
                         ToggleButton:
                             markup: True
                             name: 'AGC'
@@ -117,6 +118,7 @@
                             group: 'band'
                             background_normal:  "img/shape_off.png"
                             background_down: "img/shape_on.png"         
+                            on_press: root.band_relay(40)
     
                         ToggleButton:
                             markup: True
@@ -124,7 +126,8 @@
                             text: '20 M'
                             group: 'band'
                             background_normal:  "img/shape_off.png"
-                            background_down: "img/shape_on.png"         
+                            background_down: "img/shape_on.png"
+                            on_press: root.band_relay(20)
                     
                         ToggleButton:
                             markup: True
@@ -132,7 +135,8 @@
                             text: '15 M'
                             group: 'band'
                             background_normal:  "img/shape_off.png"
-                            background_down: "img/shape_on.png"         
+                            background_down: "img/shape_on.png" 
+                            on_press: root.band_relay(15)
                        
                         ToggleButton:
                             markup: True
@@ -141,6 +145,7 @@
                             group: 'band'
                             background_normal:  "img/shape_off.png"
                             background_down: "img/shape_on.png"                            
+                            on_press: root.band_relay(10)
                         ToggleButton:
                             markup: True
                             name: 'Auto Icom'
