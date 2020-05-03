@@ -33,38 +33,47 @@
                         size_hint: (0.5, 0.6)           
                     Label:
                         markup: True                     
-                        text: '[size=20][b][color=#00D53C]Receive[/color][/size][/b]'   
+                        text: root.ptt   
                         pos: (170 ,195)
                         size_hint: (.1, .1)    
                                              
+                    Label:
+                        markup: True                     
+                        text: '[b]'+root.power_text+'[/b]'   
+                        pos: (170 ,160)
+                        size_hint: (.1, .1)  
+                                             
+
+                                             
+                                             
 #################################################################################################                        
                     ProgressBar:
-                        pos: (60, 120)
+                        pos: (110, 165)
                         size_hint: (.5, 1)
                         value: root.fwd_proc
                     Label:
                         markup: True                     
-                        text: 'FWD___2.5___5___7.5___10___12.5___15___17.5___20 W'   
-                        pos: (60 ,105)
+                        text: 'FWD.....1........2........3........4........5........6........7........8........9........1Kw '   
+                        pos: (120 ,150)
                         size_hint: (.5, 1)
                         
                     ProgressBar:
-                        pos: (60, 165)
+                        pos: (110, 120)
                         size_hint: (.5, 1)
                         value: root.ref_proc
                     Label:
                         markup: True                     
-                        text: 'REF___2.5___5___7.5___10___12.5___15___17.5___20 W'   
-                        pos: (60 ,150)
+                        text: 'REF.....1........2........3........4........5........6........7........8........9........100W'   
+                        pos: (124 ,105)
                         size_hint: (.5, 1)                        
                     ProgressBar:
-                        pos: (60, 75)
+                        pos: (110, 75)
                         size_hint: (.5, 1)
                         value: root.drain_proc
                     Label:
                         markup: True                     
-                        text: 'Id___2.5___5___7.5___10___12.5___15___17.5___20 Amps'   
-                        pos: (60 ,60)
+                        text: 'Id......5.......10.......15.......20.......25.......30.......35.......40.......45.....50 Amp'   
+                        pos: (127 ,60)
                         size_hint: (.5, 1)                  
 #########################################################################################################                        
 
@@ -72,11 +81,11 @@
                                                                    
                     BoxLayout:
                         orientation: 'vertical'
-                        size_hint: 1, 0.5
-                        pos:(480,70)    
+                        size_hint: 1, 0.3
+                        pos:(480,120)    
                         Image:
                             source: 'img/cooler.png'
-                            size: self.texture_size
+                            #size: self.texture_size
                             pos: (100,170)
                             size_hint: (0.1, 0.1) 
                         Button:
@@ -88,7 +97,7 @@
                             background_color: (1, 1, 1, 0)
                         Image:
                             source: 'img/temperature.png'
-                            size: self.texture_size
+                            #size: self.texture_size
                             pos: (200,170)
                             size_hint: (0.1, 0.1)           
                         Button:
@@ -209,7 +218,7 @@
                     Image:
                         pos: (50 ,350)
                         size: 800,420
-                        source: 'img/red-led.png'
+                        source: root.input_led
                         size_hint: (0.1, 0.1)   
                     Label:
                         markup: True                     
