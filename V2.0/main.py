@@ -25,6 +25,8 @@ from kivy.graphics import Color, Rectangle
 from kivy.properties import NumericProperty,StringProperty,ReferenceListProperty,ObjectProperty
 from kivy.lang import Builder
 from w1thermsensor import W1ThermSensor
+from kivy.graphics import Line
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(5,  GPIO.OUT, initial=GPIO.HIGH) # 80 m relay
@@ -65,13 +67,13 @@ def dallas(dummy,temp_1,speed):
         if 45 >= temp_1.value > 40:  speed.value = 70
         if 50 >= temp_1.value > 45:  speed.value = 80
         if 55 >= temp_1.value > 50:  speed.value = 90
-        if 60 >= temp_1.value > 55:  speed.value = 100
+        if 100 >= temp_1.value > 55:  speed.value = 100
         fan.ChangeDutyCycle(speed.value)
         
 def analog(dummy, fwd):
     adc = Adafruit_ADS1x15.ADS1115()
     while True:
-        fwd.value   = (adc.read_adc(3, gain=1, data_rate=860) * 0.1262)/1000
+        fwd.value   = (adc.read_adc(0, gain=1, data_rate=860) * 0.1262)/1000
         ref.value   = (adc.read_adc(2, gain=1, data_rate=860) * 0.1262)/1000
         drain.value = (adc.read_adc(1, gain=1, data_rate=860) * 0.1262)/1000
 
@@ -86,12 +88,21 @@ class Main_Screen(FloatLayout):
         swr_led   = StringProperty('img/green-led.png')
         power_led = StringProperty("img/off.png")
         drain_led = StringProperty('img/green-led.png')
+        eta_led = StringProperty('img/red-led.png')
         filters_led = StringProperty('img/green-led.png')
+        eta = NumericProperty(0)
         fault_status = False
+        swr_fault = False
+        eta_fault = False
         ht_bol = False
+        transmit = False
         ref = 1.97 # pentru 100 W
         #ref = 2.22 # pentru 1 kW
         power_text =StringProperty('[color=#008000]QRO Off[/color]')
+        buton80_img = StringProperty('img/shape_on.png'); buton40_img = StringProperty('img/shape_on.png'); buton20_img = StringProperty('img/shape_on.png'); buton15_img = StringProperty('img/shape_on.png'); buton10_img = StringProperty('img/shape_on.png'); buton99_img = StringProperty('img/shape_on.png'); 
+        
+        
+        
         def home(self):
             if self.fault_status == False :
                 self.ids._screen_manager.current = 'home' 
@@ -106,6 +117,8 @@ class Main_Screen(FloatLayout):
                 GPIO.output(20,  0) #power relay on
                 GPIO.output(16,  0) # ptt  ena relay on
                 self.ids._screen_manager.current = 'home'
+                self.swr_fault = False
+                self.eta_fault = False
 
             if self.ht_bol == False :
                 self.power_led = "img/off.png"
@@ -115,12 +128,14 @@ class Main_Screen(FloatLayout):
                 self.ptt = '[size=20][b][color=#FFC800]Stand By[/color][/size][/b]'
 
         def swr(self):
-            if  GPIO.input(23) == 0:
+            if  GPIO.input(23) == 0 and GPIO.input(24) == 1 and GPIO.input(27) == 1 and GPIO.input(22) == 1:
                 self.swr_led = 'img/red-led.png'
+                self.swr_fault = True
                 self.fault()
-
             else:
-                self.swr_led = 'img/green-led.png'
+                if self.swr_fault == False :
+                    self.swr_led = 'img/green-led.png'
+
         def input(self):
             if (GPIO.input(22) == 0) :
                 self.input_led = 'img/red-led.png'
@@ -150,45 +165,100 @@ class Main_Screen(FloatLayout):
             os.system("reboot")            
 
 
-        def band_relay(dummy, band):
+        
+        def draw(self,dummy):
+            x = 110
+            y = 400
+            multi = 40
+            with self.canvas:
+                for i in range(11):
+                    Line(points=((i*multi)+x,y, (i*multi)+x,y+10))
+            x = 110
+            y = 355
+            multi = 40
+            with self.canvas:
+                for i in range(11):
+                    Line(points=((i*multi)+x,y, (i*multi)+x,y+10))
+            x = 110
+            y = 310
+            multi = 40
+            with self.canvas:
+                for i in range(11):
+                    Line(points=((i*multi)+x,y, (i*multi)+x,y+10))                    
+        def band_set(self,dummy):
+            f = open('band', 'rb'); last_band =  (f.readline()) ; f.close
+            self.band_relay(int(last_band))
+            
+        def band_relay(self, band):
             GPIO.output(5,  1); GPIO.output(6,  1); GPIO.output(13, 1); GPIO.output(19, 1); GPIO.output(26, 1) # set all relays to off
+            self.buton80_img = 'img/shape_off.png'; self.buton40_img = 'img/shape_off.png'; self.buton20_img = 'img/shape_off.png'; self.buton15_img = 'img/shape_off.png'; self.buton10_img = 'img/shape_off.png'; self.buton99_img = 'img/shape_off.png'; 
             if band == 80:
                 GPIO.output(5,  0)
+                self.buton80_img = 'img/shape_on.png';
+                f = open('band', 'w'); f.write("80")  ; f.close
             if band == 40:
-                GPIO.output(6,  0)                
+                GPIO.output(6,  0) 
+                self.buton40_img = 'img/shape_on.png'; 
+                f = open('band', 'w'); f.write("40")  ; f.close
             if band == 20:
                 GPIO.output(13, 0)                
+                self.buton20_img = 'img/shape_on.png'; 
+                f = open('band', 'w'); f.write("20")  ; f.close
             if band == 15:
-                GPIO.output(19, 0)
+                #GPIO.output(19, 0)
+                self.buton15_img = 'img/shape_on.png'; 
+                f = open('band', 'w'); f.write("15")  ; f.close
             if band == 10:
-                GPIO.output(26, 0)
+                self.buton10_img = 'img/shape_on.png'; 
+                #GPIO.output(26, 0)
+                f = open('band', 'w'); f.write("10")  ; f.close
+            if band == 99:
+                self.buton99_img = 'img/shape_on.png'; 
+                f = open('band', 'w'); f.write("99")  ; f.close
         def ptt_read(self,dummy):
-            if (GPIO.input(12) == 0 and self.ht_bol == True ) :
-                self.ptt =  '[size=20][b][color=#FF0600]Transmit[/color][/size][/b]'
             if (GPIO.input(12) == 1 and self.ht_bol == True ) :
+                self.ptt =  '[size=20][b][color=#FF0600]Transmit[/color][/size][/b]'
+                self.transmit = True
+            if (GPIO.input(12) == 0 and self.ht_bol == True ) :
+                self.transmit = False
                 self.ptt = '[size=20][b][color=#00D53C]Receive[/color][/size][/b]'
             if (self.ht_bol == False ) :
                 self.ptt = '[size=20][b][color=#FFC800]Stand By[/color][/size][/b]'
-
+                self.transmit = False
             
+        def eta_compute(self):
+             if self.fwd_proc > 1 and drain.value*11 > 2  : 
+                 self.eta =  (self.fwd_proc / (drain.value*11*47))*100 
+             else :
+                self.eta = 0
+             if drain.value*11 > 2 and self.eta < 20:
+                self.eta_led = 'img/red-led.png'   
+                self.eta_fault = True
+                self.fault()
+             else:  
+                if self.eta_fault == False :
+                    self.eta_led = 'img/green-led.png'
 
+
+
+
+             
         def update(self,*args):
-            s1 = 10 ** (   (self.ref - fwd.value)/0.025/10     )
-            self.fwd_proc = (1/s1)*100
-            
-            s2 = 10 ** (   (self.ref - ref.value)/0.025/10     )
-            self.ref_proc = (1/s2)*100
-            
-            self.drain_proc  = (drain.value*100)/3.3
-            self.temp = temp_1.value
-            self.speed_1 = speed.value
-            self.ptt_read('dummy')
             self.swr()
             self.drain()
             self.filters()
             self.input()
-        
-
+            
+            s1 = 10 ** (   (self.ref - fwd.value)/0.025/10     )
+            self.fwd_proc = (1/s1)*100
+            s2 = 10 ** (   (self.ref - ref.value)/0.025/10   )
+            self.ref_proc =( (1/s2)*100)*10
+            
+            self.drain_proc  = drain.value*11*2
+            self.temp = temp_1.value
+            self.speed_1 = speed.value
+            self.ptt_read('dummy')
+            self.eta_compute()  
             
 class MyApp(App):
       
@@ -202,6 +272,7 @@ class MyApp(App):
         # Add the UI elements to the layout:
         layout.add_widget(main_screen)
         Clock.schedule_once(main_screen.ptt_read)
+        Clock.schedule_once(main_screen.band_set)
         Clock.schedule_interval(main_screen.update, 0)
 
         return layout

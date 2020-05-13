@@ -1,11 +1,20 @@
 <Main_Screen>:
+
     AnchorLayout:
         ScreenManager:
             size_hint: 1, 1
             id: _screen_manager
+
+    
+        
+            
             Screen:
                 name: 'home'
                 FloatLayout:
+                    
+                
+                
+                
                     Image:
                         pos: self.pos
                         size: 800,420
@@ -42,6 +51,7 @@
                         text: '[b]'+root.power_text+'[/b]'   
                         pos: (170 ,160)
                         size_hint: (.1, .1)  
+
                                              
 
                                              
@@ -53,8 +63,8 @@
                         value: root.fwd_proc
                     Label:
                         markup: True                     
-                        text: 'FWD.....1........2........3........4........5........6........7........8........9........1Kw '   
-                        pos: (120 ,150)
+                        text: 'FWD          1        2        3        4        5        6        7        8        9        1Kw '   
+                        pos: (108 ,150)
                         size_hint: (.5, 1)
                         
                     ProgressBar:
@@ -63,8 +73,8 @@
                         value: root.ref_proc
                     Label:
                         markup: True                     
-                        text: 'REF.....1........2........3........4........5........6........7........8........9........100W'   
-                        pos: (124 ,105)
+                        text: 'REF          1        2        3        4        5        6        7        8        9        100W '   
+                        pos: (114 ,105)
                         size_hint: (.5, 1)                        
                     ProgressBar:
                         pos: (110, 75)
@@ -72,9 +82,13 @@
                         value: root.drain_proc
                     Label:
                         markup: True                     
-                        text: 'Id......5.......10.......15.......20.......25.......30.......35.......40.......45.....50 Amp'   
-                        pos: (127 ,60)
-                        size_hint: (.5, 1)                  
+                        text: 'Id         5       10      15      20      25      30      35      40      45       50 A '   
+                        pos: (120 ,60)
+                        size_hint: (.5, 1)     
+                  
+                        
+                        
+                    
 #########################################################################################################                        
 
                     ##### SENSORS ####
@@ -107,62 +121,90 @@
                            # pos: (0 ,168)
                             size_hint: (.1, .1)
                             background_color: (1, 1, 1, 0)
+                            
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: 1, 0.3
+                        pos:(350,120)    
+                        Image:
+                            source: 'img/eta.png'
+                            #size: self.texture_size
+                            pos: (150,170)
+                            size_hint: (0.1, 0.1)                            
+                            
+                            
+                        Button:
+                            markup: True
+                            font_size: 24
+                            text: str(root.eta)[0:4] + " %"
+                           # pos: (0 ,168)
+                            size_hint: (.1, .1)
+                            background_color: (1, 1, 1, 0)                            
+                            
+                            
                     BoxLayout:
                         orientation: 'vertical'
                         size_hint: 0.2, .8
                         pos:(580,60)
   
-                        ToggleButton:
+                        Button:
+                            id: buton80
                             markup: True
-                            name: 'RF Preamp'
+                            name: '80 M'
                             text: '80 M'
                             group: 'band'
-                            background_normal:  "img/shape_off.png"
+                            background_normal:  root.buton80_img
                             background_down: "img/shape_on.png"
                             on_press: root.band_relay(80)
-                        ToggleButton:
+                        Button:
                             markup: True
-                            name: 'AGC'
+                            id: buton40
+                            name: '40 M'
                             text: '40 M'
                             group: 'band'
-                            background_normal:  "img/shape_off.png"
+                            background_normal:  root.buton40_img
                             background_down: "img/shape_on.png"         
                             on_press: root.band_relay(40)
     
-                        ToggleButton:
+                        Button:
                             markup: True
-                            name: 'RF Preamp'
+                            id: buton20
+                            name: '20 M'
                             text: '20 M'
                             group: 'band'
-                            background_normal:  "img/shape_off.png"
+                            #state : 'down'
+                            background_normal:  root.buton20_img
                             background_down: "img/shape_on.png"
                             on_press: root.band_relay(20)
                     
-                        ToggleButton:
+                        Button:
                             markup: True
-                            name: 'CW Break'
-                            text: '15 M'
+                            id : buton15
+                            name: '15 M'
+                            text: 'Empty Slot'
                             group: 'band'
-                            background_normal:  "img/shape_off.png"
+                            background_normal:  root.buton15_img
                             background_down: "img/shape_on.png" 
                             on_press: root.band_relay(15)
                        
-                        ToggleButton:
+                        Button:
                             markup: True
-                            name: 'AGC'
-                            text: '10 M'
+                            id: buton10
+                            name: '10 M'
+                            text: 'Empty Slot'
                             group: 'band'
-                            background_normal:  "img/shape_off.png"
+                            background_normal:  root.buton10_img
                             background_down: "img/shape_on.png"                            
                             on_press: root.band_relay(10)
-                        ToggleButton:
+                        Button:
                             markup: True
+                            id: buton99
                             name: 'Auto Icom'
-                            text: 'Auto Icom'
+                            text: 'Empty Slot'
                             group: 'band'
-                            state: 'down'
-                            background_normal:  "img/shape_off.png"
-                            background_down: "img/shape_on.png"        
+                            background_normal:  root.buton99_img
+                            background_down: "img/shape_on.png"
+                            on_press: root.band_relay(99)
             Screen:
                 name: 'System'
                 FloatLayout: 
@@ -242,12 +284,12 @@
                     Image:
                         pos: (50 ,250)
                         size: 800,420
-                        source: 'img/green-led.png'
+                        source: root.eta_led
                         size_hint: (0.1, 0.1)   
                     Label:
                         markup: True                     
-                        text: '[size=20][b]Bias voltage [/size][/b]'   
-                        pos: (140 ,250)
+                        text: '[size=20][b]Efficiency < 65% [/size][/b]'   
+                        pos: (150 ,250)
                         size_hint: (.1, .1)                            
                                                   
 ############################### SWR LED ###############################################
@@ -258,8 +300,8 @@
                         size_hint: (0.1, 0.1)   
                     Label:
                         markup: True                     
-                        text: '[size=20][b]SWR Fault  [/size][/b]'   
-                        pos: (390 ,250)
+                        text: '[size=20][b]SWR 2:1  [/size][/b]'   
+                        pos: (370 ,250)
                         size_hint: (.1, .1)                                                         
                 
 ############################### Drain LED ###############################################
@@ -271,7 +313,7 @@
                     Label:
                         markup: True                     
                         text: '[size=20][b]Over Current [/size][/b]'   
-                        pos: (390 ,300)
+                        pos: (387 ,300)
                         size_hint: (.1, .1)                                    
             
 ############################### Filter LED ###############################################
@@ -282,11 +324,11 @@
                         size_hint: (0.1, 0.1)   
                     Label:
                         markup: True                     
-                        text: '[size=20][b]Filters Fault [/size][/b]'   
-                        pos: (390 ,350)
+                        text: '[size=20][b]Filters / Antenna Fault [/size][/b]'   
+                        pos: (430 ,350)
                         size_hint: (.1, .1)                                    
 
                 
             
-                
+                    
 
